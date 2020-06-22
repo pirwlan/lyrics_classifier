@@ -1,5 +1,6 @@
 import argparse
-import helper as h
+import build_classifier as bc
+import util
 import os
 import scraper as scr
 import textcleaner as tcl
@@ -7,17 +8,19 @@ import textcleaner as tcl
 
 def lyrics_classifier(parameter):
 
-    artists = h.clean_args(parameter)
+    # artists = util.clean_args(parameter)
 
-    scr.scrape_artists(artists)
+    # scr.scrape_artists(artists)
 
-    df_lyrics = tcl.clean_lyrics()
+    # tcl.clean_lyrics()
+
+    bc.build_model()
+
 
 
 if __name__ == '__main__':
 
-    h.create_folder([os.path.join(os.getcwd(), 'data')])
-
+    util.create_folder([os.path.join(os.getcwd(), 'data')])
 
     # construct the argument parser and parse the arguments
     ap = argparse.ArgumentParser()

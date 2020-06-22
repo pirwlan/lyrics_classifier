@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import os
-import helper as h
+import util
 import re
 import requests
 import time
@@ -140,13 +140,13 @@ def get_lyrics_htmls(lyrics):
     """
 
     lyrics_folder = os.path.join(os.getcwd(), 'data', 'lyrics_htmls')
-    h.create_folder([lyrics_folder])
+    util.create_folder([lyrics_folder])
 
     base_url = r'https://www.lyrics.com'
 
     for artist in lyrics:
         artist_lyric_folder = os.path.join(lyrics_folder, artist)
-        h.create_folder([artist_lyric_folder])
+        util.create_folder([artist_lyric_folder])
         for song in lyrics[artist].keys():
             lyric_url = f'{base_url}{lyrics[artist][song]}'
             file_path = os.path.join(artist_lyric_folder, f'{song.replace(" ", "_")}.txt')
@@ -166,13 +166,13 @@ def convert_lyrics_html_to_txt():
     source_path = os.path.join(os.getcwd(), 'data', 'lyrics_htmls')
 
     target_folder = os.path.join(os.getcwd(), 'data', 'lyrics_plain')
-    h.create_folder([target_folder])
+    util.create_folder([target_folder])
 
     # artist loop
     for artist in os.listdir(source_path):
         source_artist_folder = os.path.join(source_path, artist)
         target_artist_folder = os.path.join(target_folder, artist)
-        h.create_folder([target_artist_folder])
+        util.create_folder([target_artist_folder])
 
         # lyric loop
         for lyric_html in os.listdir(source_artist_folder):
@@ -197,7 +197,7 @@ def scrape_artists(artists: list):
         artists: list - list of artists
     """
     artist_folder = os.path.join(os.getcwd(), 'data', 'artist_pages')
-    h.create_folder([artist_folder])
+    util.create_folder([artist_folder])
 
     artist_urls = get_artists_urls(artists)
     get_artist_page(artist_urls, artist_folder)
