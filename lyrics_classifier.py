@@ -17,7 +17,6 @@ def lyrics_classifier(parameter):
     bc.build_model()
 
 
-
 if __name__ == '__main__':
 
     util.create_folder([os.path.join(os.getcwd(), 'data')])
