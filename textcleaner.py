@@ -80,6 +80,4 @@ def clean_lyrics():
                                 'data',
                                 'lyrics.csv'))
 
-
-
     return df_data

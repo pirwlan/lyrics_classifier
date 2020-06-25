@@ -27,3 +27,9 @@ After all songs of each artist have been downloaded will be saved as plain text.
 To these lyrics, a Bag of Words model is applied, which counts the occurrence of each word per lyrics, and determines a distribution of word patterns per lyrics. This is down using the `TfidfVectorizer`, which combines the counting of the words, and the normalization of the counts. 
 
 The normalized word counts are used to train a `sklearn` Logistic Regression classification model learning which artists uses which word distribution patterns. 
+
+
+
+#### Requirements
+
+You can find all necessary dependencies in the requirements.txt files. 
