@@ -7,9 +7,12 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
 
+
 import numpy as np
 import os
 import pandas as pd
+import pickle
+import util
 
 
 def sparse_to_dense(sparse_matrix):
@@ -84,6 +87,21 @@ def evaluate_grid(best_clf):
     print('----------------------------------------------------------')
 
 
+def save_model(model):
+    """
+    Save current model
+    Args:
+        model: sklearn model - Fitted model
+    """
+    model_folder_path = os.path.join(os.getcwd(), 'model')
+    util.create_folder([model_folder_path])
+
+    model_filename = os.path.join(model_folder_path, 'model.pickle')
+
+    with open(model_filename, 'wb') as f:
+        pickle.dump(model, f)
+
+
 def build_model():
     """
     Building classifier
@@ -113,7 +131,7 @@ def build_model():
 
     evaluate_grid(best_clf)
 
-    return best_clf.best_estimator_
+    save_model(best_clf)
 
 
 def grid_parameters():
@@ -123,12 +141,8 @@ def grid_parameters():
         dict - Containing parameters
     """
     return {
-        #'classifier__alpha': [0.1, 0.2, 0.3, 0.4],
         'classifier__C': [250, 500, 1000],
-        #'classifier__penalty': ['elasticnet'],
         'classifier__max_iter': [500],
-        #'classifier__solver': ['saga'],
-        #'classifier__l1_ratio': np.linspace(0.1, 1, 9),
         'feature_engineering__lyrics_pipe__lyrics_vectorizer__max_df': np.linspace(0.7, 1, 4),
         'feature_engineering__lyrics_pipe__lyrics_vectorizer__min_df': np.linspace(0, 0.3, 4),
         'feature_engineering__lyrics_pipe__lyrics_vectorizer__stop_words': ['english'],
