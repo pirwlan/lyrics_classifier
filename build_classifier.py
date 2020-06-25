@@ -1,12 +1,27 @@
 from sklearn.compose import ColumnTransformer
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GridSearchCV
+from sklearn.naive_bayes import GaussianNB
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import FunctionTransformer
 
 import numpy as np
 import os
 import pandas as pd
+
+
+def sparse_to_dense(sparse_matrix):
+    """
+    Transforms sparse matrix from Vectorizer to dense matrix
+    Args:
+        sparse_matrix: np.array - Output array from Vector
+
+    Returns:
+        dense_matrix: np.array
+    """
+    return sparse_matrix.toarray()
 
 
 def lyrics_pipeline():
@@ -16,7 +31,8 @@ def lyrics_pipeline():
         sklearn.Pipeline
     """
     return Pipeline([
-            ('lyrics_vectorizer', CountVectorizer())
+            ('lyrics_vectorizer', TfidfVectorizer()),
+            ('lyrics_spacy', FunctionTransformer(sparse_to_dense)),
     ])
 
 
@@ -29,19 +45,21 @@ def setup_col_transformer():
     lyrics_pipe = lyrics_pipeline()
 
     return ColumnTransformer([
-        ('lyrics_pipe', lyrics_pipe, 'Lyrics')
+        ('lyrics_pipe', lyrics_pipe, 'lyrics_clean'),
     ])
 
 
 def clf_pipe():
     """
-    Main pipeline for Grid Search
+    Main pipeline for Grid SearchTfidfVectorizer
     Returns:
         sklearn.Pipeline - Main Pipeline
     """
 
     col_trans = setup_col_transformer()
-    classifier = MultinomialNB()
+    classifier = GaussianNB()
+    # classifier = MultinomialNB()
+    classifier = LogisticRegression()
     return Pipeline([('feature_engineering', col_trans),
                      ('classifier', classifier)])
 
@@ -57,7 +75,7 @@ def evaluate_grid(best_clf):
     print(best_clf.best_params_)
     print('----------------------------------------------------------')
     print('----------------------------------------------------------')
-    # get index of best modle
+    # get index of best model
     best = np.argmin(best_clf.cv_results_['rank_test_score'])
     print(f'Training score: {best_clf.cv_results_["mean_train_score"][best]:.2%}')
     print('----------------------------------------------------------')
@@ -71,14 +89,14 @@ def build_model():
     Building classifier
     Returns:
         sklearn.model
-
     """
+
     df_lyrics = pd.read_csv(os.path.join(os.getcwd(),
                                          'data',
                                          'lyrics.csv'),
                             index_col=0)
 
-    X = df_lyrics[['Lyrics']]
+    X = df_lyrics[['lyrics_clean']]
     y = df_lyrics['Artist']
 
     classifier_pipe = clf_pipe()
@@ -95,15 +113,27 @@ def build_model():
 
     evaluate_grid(best_clf)
 
+    return best_clf.best_estimator_
+
 
 def grid_parameters():
     """
     Parameter for grid search.
     Returns:
         dict - Containing parameters
-
     """
     return {
-        'classifier__alpha': [1.0e-10, 0.1, 1, 10]}
+        #'classifier__alpha': [0.1, 0.2, 0.3, 0.4],
+        'classifier__C': [250, 500, 1000],
+        #'classifier__penalty': ['elasticnet'],
+        'classifier__max_iter': [500],
+        #'classifier__solver': ['saga'],
+        #'classifier__l1_ratio': np.linspace(0.1, 1, 9),
+        'feature_engineering__lyrics_pipe__lyrics_vectorizer__max_df': np.linspace(0.7, 1, 4),
+        'feature_engineering__lyrics_pipe__lyrics_vectorizer__min_df': np.linspace(0, 0.3, 4),
+        'feature_engineering__lyrics_pipe__lyrics_vectorizer__stop_words': ['english'],
+        'feature_engineering__lyrics_pipe__lyrics_vectorizer__ngram_range': [(1, 1), (1, 2)]
+         }
+
 
 

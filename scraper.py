@@ -145,6 +145,7 @@ def get_lyrics_htmls(lyrics):
     base_url = r'https://www.lyrics.com'
 
     for artist in lyrics:
+
         artist_lyric_folder = os.path.join(lyrics_folder, artist)
         util.create_folder([artist_lyric_folder])
         for song in lyrics[artist].keys():

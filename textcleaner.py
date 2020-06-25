@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import re
+import spacy
 
 
 def read_lyrics(lyrics_filepath):
@@ -24,6 +25,26 @@ def read_lyrics(lyrics_filepath):
     lyrics = re.sub(regex_mul_spaces, ' ', lyrics)
 
     return lyrics
+
+
+def nlp_tasks(lyrics):
+    """
+    Furter tokenization
+    Args:
+        lyrics: list - lyrics per list
+
+    Returns:
+        lyrics: list - cleaned lyrics
+    """
+    song_list = list()
+    nlp = spacy.load('en_core_web_sm')
+
+    for song in lyrics:
+        clean_song = nlp(song)
+        clean_song = [word.lemma_ for word in clean_song if word.is_punct is False]
+        song_list.append(' '.join(clean_song))
+
+    return song_list
 
 
 def clean_lyrics():
@@ -50,8 +71,15 @@ def clean_lyrics():
             lyrics_list.append([lyrics, artist])
 
     df_data = pd.DataFrame(lyrics_list, columns=['Lyrics', 'Artist'])
+
+    lyrics_list = nlp_tasks(df_data['Lyrics'])
+
+    df_data['lyrics_clean'] = lyrics_list
+
     df_data.to_csv(os.path.join(os.getcwd(),
                                 'data',
                                 'lyrics.csv'))
+
+
 
     return df_data

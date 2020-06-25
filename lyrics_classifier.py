@@ -8,12 +8,16 @@ import textcleaner as tcl
 
 def lyrics_classifier(parameter):
 
-    # artists = util.clean_args(parameter)
+    artists = util.clean_args(parameter)
 
-    # scr.scrape_artists(artists)
+    print('[INFO] Web scraping starts...')
+    scr.scrape_artists(artists)
 
-    # tcl.clean_lyrics()
-
+    print('[INFO] Web scraping done...')
+    print('[INFO] Cleaning Lyrics...')
+    tcl.clean_lyrics()
+    print('[INFO] Lyrics prepared...')
+    print('[INFO] Starting model training...')
     bc.build_model()
 
 
