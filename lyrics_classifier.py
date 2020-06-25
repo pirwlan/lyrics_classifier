@@ -12,15 +12,15 @@ def lyrics_classifier(parameter):
     artists = util.clean_args(parameter)
 
     print('[INFO] Web scraping starts...')#
-    # scr.scrape_artists(artists)
+    scr.scrape_artists(artists)
 
     print('[INFO] Web scraping done...')
     print('[INFO] Cleaning Lyrics...')
-    # tcl.clean_lyrics()
+    tcl.clean_lyrics()
     print('[INFO] Lyrics prepared...')
     print('[INFO] Starting model training...')
 
-    # bc.build_model()
+    bc.build_model()
     print('[INFO] Model trained...')
     ui.interaction()
 
